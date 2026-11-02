@@ -1,0 +1,37 @@
+﻿python : INFO:     Started 
+server process [18328]
+At line:1 char:1
++ python -m uvicorn 
+app.main:app --port 8001 
+--host 0.0.0.0 2>&1 | Out- 
+...
+
+
+.\venv\Scripts\activate; python -m uvicorn app.main:app --reload --port 8000
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~
+    + CategoryInfo           
+   : NotSpecified: (INFO:    
+     Started server proces   
+ s [18328]:String) [], Re    
+moteException
+    + FullyQualifiedErrorId  
+   : NativeCommandError
+ 
+INFO:     Waiting for 
+application startup.
+INFO:     Application 
+startup complete.
+ERROR:    [Errno 10048] 
+error while attempting to 
+bind on address ('0.0.0.0', 
+8001): only one usage of 
+each socket address 
+(protocol/network 
+address/port) is normally 
+permitted
+INFO:     Waiting for 
+application shutdown.
+INFO:     Application 
+shutdown complete.

@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "name": "Speaking",
+    "description": "Speaking instructions\r\nYou will answer some questions about yourself and then do three short speaking tasks.\r\n\r\nListen to the instructions and speak clearly into your microphone when you hear the signal.\r\n\r\nEach part of the test will appear automatically.\r\n\r\nThe test will take about 12 minutes.\r\n\r\n\r\n\r\nWhen you click on the next button, the test will begin."
+  },
+  {
+    "id": 2,
+    "name": "Listening",
+    "description": "Listening instructions\r\nYou will listen to seventeen recordings.\r\n\r\nClick on the PLAY button to listen to each recording.\r\n\r\nYou can listen to each recording TWO TIMES ONLY.\r\n\r\nYou have 40 minutes to complete the test.\r\n\r\n\r\n\r\nWhen you click on the next button, the test will begin."
+  },
+  {
+    "id": 3,
+    "name": "Writing",
+    "description": "Writing assessment module"
+  },
+  {
+    "id": 4,
+    "name": "Reading",
+    "description": "Reading assessment module"
+  },
+  {
+    "id": 5,
+    "name": "Grammar & Vocabulary",
+    "description": "Grammar and Vocabulary instructions\r\nThe test consists of two sections:\r\n\r\nGrammar: 25 questions\r\n\r\nVocabulary: 5 tasks with 5 questions each\r\n\r\nTotal Time: 25 minutes"
+  },
+  {
+    "id": 6,
+    "name": "Numeracy",
+    "description": "\r\nNumeracy instructions\r\nThis practice test has 16 tasks.\r\n\r\nAfter you have completed an item, click on the 'Next' button. You will not be able to go backwards in the test to check your answers, so please make sure you are happy with your response before you click 'Next'.\r\n\r\nIf a question asks you to type in a result or number, only put in the number. For example, if the answer is 15 metres, type 15. If the answer is $12, only type 12.\r\n\r\nIn the later stages of the test you will see a calculator image in the top right hand of the screen. Click on it to use the calculator. You can move the calculator around the screen by dragging and dropping it.\r\n\r\nThe maximum allowed time for this practice test is 25 minutes but you can take the practice test as many times as you want.\r\n\r\n\r\n\r\nWhen you click on the 'Next' button, the test will begin."
+  }
+]

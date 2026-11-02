@@ -1,0 +1,31 @@
+# Archives & deployment zips
+*.zip
+*.tar.gz
+*.rar
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# Python cache
+__pycache__/
+*/__pycache__/
+*.py[cod]
+
+# Node / Frontend build
+node_modules/
+*/node_modules/
+dist/
+*/dist/
+
+# Environment Variables
+.env
+*.env
+!.env.example
+!*.env.example
+
+# Scratch & temporary
+scratch/
+backend/scratch/
+*.log

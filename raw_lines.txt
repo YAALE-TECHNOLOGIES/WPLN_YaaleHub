@@ -1,0 +1,42 @@
+354|'                            if (isAutoEval) {'
+355|'                              const isCorrect = ans.selected_option_text && ans.selected_option_text === ans.correct_option_text;'
+356|'                              return `${isCorrect ? ans.question_marks : 0} / ${ans.question_marks}`;'
+357|'                            }'
+358|'                            const obtained = ans.marks_obtained !== null && ans.marks_obtained !== undefined'
+359|'                              ? parseFloat(ans.marks_obtained)'
+360|'                              : (scores[ans.question_id] ?? 0);'
+361|'                            return `${obtained} / ${ans.question_marks}`;'
+362|'                          })()}'
+363|'                      </span>'
+364|'                   </div>'
+365|'               </div>'
+366|'               <p className="q-txt">{ans.question_text}</p>'
+367|'               '
+368|'               <div className="ans-body">'
+369|"                  {ans.question_type === 'WRITING_PROMPT' ? ("
+370|'                     <div className="writing-preview">{ans.text_response}</div>'
+371|"                  ) : ans.question_type === 'SPEAKING_PROMPT' ? ("
+372|'                     <div className="audio-preview">'
+373|'                        {ans.audio_response ? ('
+374|'                            <>'
+375|'                                <audio controls src={`${BASE_URL}/${ans.audio_response}`} />'
+376|'                                <a href={`${BASE_URL}/${ans.audio_response}`} className="dl-btn" download><Download size={14}/> Download Audio</a>'
+377|'                            </>'
+378|'                        ) : <p className="sub-text">No audio recorded</p>}'
+379|'                     </div>'
+380|"                  ) : ans.question_type === 'DRAG_DROP_ORDERING' ? ("
+381|'                     <div className="dd-ordering-preview">'
+382|'                        {ans.text_response ? (() => {'
+383|'                            let userOrder = [];'
+384|'                            try { userOrder = JSON.parse(ans.text_response); } catch(e) { return <p className="sub-text">Malformed result</p>; }'
+385|'                            const data = ans.drag_drop_data || { items: [] };'
+386|'                            return ('
+387|'                                <div className="ordering-list" style={{display: \'flex\', flexDirection: \'column\', gap: \'8px\'}}>'
+388|'                                    {userOrder.map((idx, pos) => {'
+389|'                                        const isCorrectPos = idx === pos;'
+390|'                                        return ('
+391|'                                            <div key={pos} style={{'
+392|"                                                background: isCorrectPos ? '#f0fdf4' : '#fef2f2',"
+393|"                                                padding: '8px 12px',"
+394|"                                                borderRadius: '8px',"
+395|"                                                border: `1px solid ${isCorrectPos ? '#bbf7d0' : '#fecaca'}`,"

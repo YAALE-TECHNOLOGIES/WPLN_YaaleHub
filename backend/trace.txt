@@ -1,0 +1,173 @@
+﻿python : Traceback (most 
+recent call last):
+At line:1 char:1
++ python -m uvicorn 
+app.main:app --port 8000 
+--host 0.0.0.0 2>&1 | Out- 
+...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~
+    + CategoryInfo           
+   : NotSpecified: (Traceba  
+  ck (most recent call las   
+ t)::String) [], RemoteEx    
+ception
+    + FullyQualifiedErrorId  
+   : NativeCommandError
+ 
+  File "C:\Users\DELL\AppData
+\Local\Programs\Python\Python
+310\lib\runpy.py", line 196, 
+in _run_module_as_main
+    return _run_code(code, 
+main_globals, None,
+  File "C:\Users\DELL\AppData
+\Local\Programs\Python\Python
+310\lib\runpy.py", line 86, 
+in _run_code
+    exec(code, run_globals)
+  File "C:\Users\DELL\AppData
+\Local\Programs\Python\Python
+310\lib\site-packages\uvicorn
+\__main__.py", line 4, in 
+<module>
+    uvicorn.main()
+  File "C:\Users\DELL\AppData
+\Local\Programs\Python\Python
+310\lib\site-packages\click\c
+ore.py", line 1485, in 
+__call__
+    return self.main(*args, 
+**kwargs)
+  File "C:\Users\DELL\AppData
+\Local\Programs\Python\Python
+310\lib\site-packages\click\c
+ore.py", line 1406, in main
+    rv = self.invoke(ctx)
+  File "C:\Users\DELL\AppData
+\Local\Programs\Python\Python
+310\lib\site-packages\click\c
+ore.py", line 1269, in invoke
+    return 
+ctx.invoke(self.callback, 
+**ctx.params)
+  File "C:\Users\DELL\AppData
+\Local\Programs\Python\Python
+310\lib\site-packages\click\c
+ore.py", line 824, in invoke
+    return callback(*args, 
+**kwargs)
+  File "C:\Users\DELL\AppData
+\Local\Programs\Python\Python
+310\lib\site-packages\uvicorn
+\main.py", line 433, in main
+    run(
+  File "C:\Users\DELL\AppData
+\Local\Programs\Python\Python
+310\lib\site-packages\uvicorn
+\main.py", line 606, in run
+    server.run()
+  File "C:\Users\DELL\AppData
+\Local\Programs\Python\Python
+310\lib\site-packages\uvicorn
+\server.py", line 75, in run
+    return asyncio_run(self.s
+erve(sockets=sockets), loop_f
+actory=self.config.get_loop_f
+actory())
+  File "C:\Users\DELL\AppData
+\Local\Programs\Python\Python
+310\lib\site-packages\uvicorn
+\_compat.py", line 60, in 
+asyncio_run
+    return 
+loop.run_until_complete(main)
+  File "C:\Users\DELL\AppData
+\Local\Programs\Python\Python
+310\lib\asyncio\base_events.p
+y", line 649, in 
+run_until_complete
+    return future.result()
+  File "C:\Users\DELL\AppData
+\Local\Programs\Python\Python
+310\lib\site-packages\uvicorn
+\server.py", line 79, in 
+serve
+    await 
+self._serve(sockets)
+  File "C:\Users\DELL\AppData
+\Local\Programs\Python\Python
+310\lib\site-packages\uvicorn
+\server.py", line 86, in 
+_serve
+    config.load()
+  File "C:\Users\DELL\AppData
+\Local\Programs\Python\Python
+310\lib\site-packages\uvicorn
+\config.py", line 441, in 
+load
+    self.loaded_app = 
+import_from_string(self.app)
+  File "C:\Users\DELL\AppData
+\Local\Programs\Python\Python
+310\lib\site-packages\uvicorn
+\importer.py", line 19, in 
+import_from_string
+    module = importlib.import
+_module(module_str)
+  File "C:\Users\DELL\AppData
+\Local\Programs\Python\Python
+310\lib\importlib\__init__.py
+", line 126, in import_module
+    return _bootstrap._gcd_im
+port(name[level:], package, 
+level)
+  File "<frozen 
+importlib._bootstrap>", line 
+1050, in _gcd_import
+  File "<frozen 
+importlib._bootstrap>", line 
+1027, in _find_and_load
+  File "<frozen 
+importlib._bootstrap>", line 
+1006, in 
+_find_and_load_unlocked
+  File "<frozen 
+importlib._bootstrap>", line 
+688, in _load_unlocked
+  File "<frozen importlib._bo
+otstrap_external>", line 
+883, in exec_module
+  File "<frozen 
+importlib._bootstrap>", line 
+241, in 
+_call_with_frames_removed
+  File "D:\WPLN\backend\app\m
+ain.py", line 10, in <module>
+    from .api import 
+auth_router, 
+candidate_router, 
+admin_router
+  File "D:\WPLN\backend\app\a
+pi\__init__.py", line 1, in 
+<module>
+    from . import 
+auth_router, 
+candidate_router, 
+admin_router
+  File "D:\WPLN\backend\app\a
+pi\admin_router.py", line 
+10, in <module>
+    from ..schemas import 
+User as UserSchema, 
+UserCreate, Module as 
+ModuleSchema, Question as 
+QuestionSchema, 
+QuestionCreate, TestAttempt 
+as AttemptSchema, 
+TestAttemptUpdate
+ImportError: cannot import 
+name 'QuestionCreate' from 
+'app.schemas' (D:\WPLN\backen
+d\app\schemas.py)

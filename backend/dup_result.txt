@@ -1,0 +1,12 @@
+﻿=== Duplicate user_answers check ===
+  attempt=44, question=27, count=2 <-- DUPLICATE!
+  attempt=44, question=37, count=2 <-- DUPLICATE!
+  attempt=44, question=38, count=2 <-- DUPLICATE!
+
+=== All user_answers rows for attempt 44 ===
+  row_id=48, attempt=44, question=27, option=113, marks=10.00
+  row_id=49, attempt=44, question=27, option=113, marks=None
+  row_id=50, attempt=44, question=37, option=117, marks=10.00
+  row_id=51, attempt=44, question=37, option=117, marks=None
+  row_id=52, attempt=44, question=38, option=121, marks=10.00
+  row_id=53, attempt=44, question=38, option=121, marks=None

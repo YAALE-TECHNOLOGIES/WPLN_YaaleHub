@@ -1,0 +1,60 @@
+name: 🚀 Deploy WPLN Project
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Deploy to Server via SSH
+        uses: appleboy/ssh-action@v1.1.0
+        with:
+          host: ${{ secrets.HOSTINGER_SERVER_IP }}
+          username: root
+          password: ${{ secrets.SERVER_PASSWORD }}
+          script: |
+            set -e
+            echo "🚀 Starting Deployment..."
+
+            # Navigate to project directory
+            cd /root/WPLN || { echo "Directory /root/WPLN not found"; exit 1; }
+
+            echo "📥 Syncing latest code (Forcing update)..."
+            git fetch origin main
+            git reset --hard origin/main
+
+            echo "🐍 Setting up Backend..."
+            if [ ! -d "venv" ]; then
+              python3 -m venv venv
+            fi
+            source venv/bin/activate
+            pip install --upgrade pip
+            pip install -r backend/requirements.txt
+
+            echo "🗄️ Running Database Migrations..."
+            python backend/migrate_db.py || echo "Migration step failed"
+
+            echo "⚛️ Building Frontend..."
+            cd frontend
+            npm install
+            npm run build
+
+            echo "📁 Deploying Frontend Files..."
+            mkdir -p /var/www/frontend
+            rm -rf /var/www/frontend/*
+            cp -r dist/* /var/www/frontend/
+
+            echo "🔄 Restarting Backend Service..."
+            systemctl restart backend || echo "Failed to restart backend service"
+
+            echo "🌐 Restarting Nginx..."
+            systemctl restart nginx || echo "Failed to restart nginx"
+
+            echo "✅ Deployment Completed Successfully!"
