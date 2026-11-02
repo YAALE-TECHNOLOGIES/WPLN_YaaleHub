@@ -78,8 +78,9 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
             headers={"WWW-Authenticate": "Bearer"},
         )
     
+    user_role = user.role.name if user.role else "CANDIDATE"
     access_token = create_access_token(
-        data={"sub": user.email, "role": user.role.name}
+        data={"sub": user.email, "role": user_role}
     )
     refresh_token = create_refresh_token(
         data={"sub": user.email}

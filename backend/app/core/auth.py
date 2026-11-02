@@ -13,6 +13,16 @@ ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 REFRESH_TOKEN_EXPIRE_DAYS = 7
 
+# Passlib compatibility fix for bcrypt >= 4.0.0
+try:
+    import bcrypt
+    if not hasattr(bcrypt, '__about__'):
+        class _About:
+            __version__ = getattr(bcrypt, '__version__', '4.0.1')
+        bcrypt.__about__ = _About()
+except Exception:
+    pass
+
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
