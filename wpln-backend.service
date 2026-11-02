@@ -1,0 +1,18 @@
+[Unit]
+Description=WPLN Online Assessment FastAPI Backend (Port 8412)
+After=network.target mysql.service
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/wpln.yaaletech.in/backend
+EnvironmentFile=/var/www/wpln.yaaletech.in/backend/.env
+ExecStart=/var/www/wpln.yaaletech.in/backend/venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8412 --workers 3
+Restart=always
+RestartSec=5
+StandardOutput=append:/var/log/wpln-backend.log
+StandardError=append:/var/log/wpln-backend-error.log
+
+[Install]
+WantedBy=multi-user.target
