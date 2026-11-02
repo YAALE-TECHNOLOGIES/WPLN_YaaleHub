@@ -60,36 +60,46 @@ def register(user_data: UserCreate, db: Session = Depends(get_db)):
 
 @router.post("/login", response_model=Token)
 def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
-    email = form_data.username.strip().lower()
-    print(f"Login attempt for: '{email}'")
-    user = db.query(User).filter(User.email == email).first()
-    if user:
-        print(f"User found for '{email}'. Verifying password...")
-        is_valid = verify_password(form_data.password, user.password_hash)
-        print(f"Password valid: {is_valid}")
-    else:
-        print(f"No user found with email: '{email}'")
-    
-    if not user or not verify_password(form_data.password, user.password_hash):
-        print("Login failed: Invalid credentials")
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect email or password",
-            headers={"WWW-Authenticate": "Bearer"},
+    try:
+        email = form_data.username.strip().lower()
+        print(f"Login attempt for: '{email}'")
+        user = db.query(User).filter(User.email == email).first()
+        if user:
+            print(f"User found for '{email}'. Verifying password...")
+            is_valid = verify_password(form_data.password, user.password_hash)
+            print(f"Password valid: {is_valid}")
+        else:
+            print(f"No user found with email: '{email}'")
+        
+        if not user or not verify_password(form_data.password, user.password_hash):
+            print("Login failed: Invalid credentials")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Incorrect email or password",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+        
+        user_role = user.role.name if user.role else "CANDIDATE"
+        access_token = create_access_token(
+            data={"sub": user.email, "role": user_role}
         )
-    
-    user_role = user.role.name if user.role else "CANDIDATE"
-    access_token = create_access_token(
-        data={"sub": user.email, "role": user_role}
-    )
-    refresh_token = create_refresh_token(
-        data={"sub": user.email}
-    )
-    return {
-        "access_token": access_token, 
-        "refresh_token": refresh_token,
-        "token_type": "bearer"
-    }
+        refresh_token = create_refresh_token(
+            data={"sub": user.email}
+        )
+        return {
+            "access_token": access_token, 
+            "refresh_token": refresh_token,
+            "token_type": "bearer"
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Login Database Error: {str(e)}"
+        )
 
 @router.post("/refresh", response_model=Token)
 def refresh_token(refresh_token: str, db: Session = Depends(get_db)):

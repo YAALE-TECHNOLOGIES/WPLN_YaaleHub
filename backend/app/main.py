@@ -100,45 +100,71 @@ def seed_db():
         db.close()
 
 
-def ensure_question_set_column():
-    inspector = inspect(engine)
-    if 'questions' in inspector.get_table_names():
-        columns = [c['name'] for c in inspector.get_columns('questions')]
-        if 'question_set' not in columns:
-            with engine.begin() as conn:
-                if engine.dialect.name == 'mysql':
-                    conn.execute(text("ALTER TABLE questions ADD COLUMN question_set VARCHAR(20) NOT NULL DEFAULT 'set1'"))
-                else:
-                    conn.execute(text("ALTER TABLE questions ADD COLUMN question_set VARCHAR(20) DEFAULT 'set1'"))
+def auto_sync_schema():
+    try:
+        inspector = inspect(engine)
+        existing_tables = inspector.get_table_names()
 
-def ensure_user_assigned_set_column():
-    inspector = inspect(engine)
-    if 'users' in inspector.get_table_names():
-        columns = [c['name'] for c in inspector.get_columns('users')]
-        if 'assigned_set' not in columns:
-            with engine.begin() as conn:
-                if engine.dialect.name == 'mysql':
+        with engine.begin() as conn:
+            # 1. users table
+            if 'users' in existing_tables:
+                user_cols = [c['name'] for c in inspector.get_columns('users')]
+                if 'education' not in user_cols:
+                    conn.execute(text("ALTER TABLE users ADD COLUMN education VARCHAR(100) NULL"))
+                    print("Added 'education' column to users table")
+                if 'batch' not in user_cols:
+                    conn.execute(text("ALTER TABLE users ADD COLUMN batch VARCHAR(100) NULL"))
+                    print("Added 'batch' column to users table")
+                if 'assigned_set' not in user_cols:
                     conn.execute(text("ALTER TABLE users ADD COLUMN assigned_set VARCHAR(20) NOT NULL DEFAULT 'set1'"))
-                else:
-                    conn.execute(text("ALTER TABLE users ADD COLUMN assigned_set VARCHAR(20) DEFAULT 'set1'"))
-        else:
-            with engine.begin() as conn:
+                    print("Added 'assigned_set' column to users table")
                 conn.execute(text("UPDATE users SET assigned_set = 'set1' WHERE assigned_set IS NULL"))
 
+            # 2. modules table
+            if 'modules' in existing_tables:
+                mod_cols = [c['name'] for c in inspector.get_columns('modules')]
+                if 'module_type' not in mod_cols:
+                    conn.execute(text("ALTER TABLE modules ADD COLUMN module_type VARCHAR(50) NULL"))
+                if 'begin_speaking_audio_url' not in mod_cols:
+                    conn.execute(text("ALTER TABLE modules ADD COLUMN begin_speaking_audio_url VARCHAR(500) NULL"))
+                if 'speaking_recording_duration' not in mod_cols:
+                    conn.execute(text("ALTER TABLE modules ADD COLUMN speaking_recording_duration INT NULL DEFAULT 30"))
+                if 'proficiency_mapping' not in mod_cols:
+                    conn.execute(text("ALTER TABLE modules ADD COLUMN proficiency_mapping JSON NULL"))
+
+            # 3. questions table
+            if 'questions' in existing_tables:
+                q_cols = [c['name'] for c in inspector.get_columns('questions')]
+                if 'question_set' not in q_cols:
+                    conn.execute(text("ALTER TABLE questions ADD COLUMN question_set VARCHAR(20) NOT NULL DEFAULT 'set1'"))
+                if 'display_type' not in q_cols:
+                    conn.execute(text("ALTER TABLE questions ADD COLUMN display_type VARCHAR(50) NULL"))
+                if 'drag_drop_data' not in q_cols:
+                    conn.execute(text("ALTER TABLE questions ADD COLUMN drag_drop_data JSON NULL"))
+                if 'group_id' not in q_cols:
+                    conn.execute(text("ALTER TABLE questions ADD COLUMN group_id INT NULL"))
+
+            # 4. test_attempts table
+            if 'test_attempts' in existing_tables:
+                ta_cols = [c['name'] for c in inspector.get_columns('test_attempts')]
+                if 'question_set' not in ta_cols:
+                    conn.execute(text("ALTER TABLE test_attempts ADD COLUMN question_set VARCHAR(20) NOT NULL DEFAULT 'set1'"))
+                if 'is_published' not in ta_cols:
+                    conn.execute(text("ALTER TABLE test_attempts ADD COLUMN is_published BOOLEAN DEFAULT FALSE"))
+                if 'is_locked' not in ta_cols:
+                    conn.execute(text("ALTER TABLE test_attempts ADD COLUMN is_locked BOOLEAN DEFAULT FALSE"))
+                conn.execute(text("UPDATE test_attempts SET question_set = 'set1' WHERE question_set IS NULL"))
+    except Exception as e:
+        print(f"Auto-sync schema warning: {e}")
+
+def ensure_question_set_column():
+    pass
+
+def ensure_user_assigned_set_column():
+    pass
 
 def ensure_testattempt_question_set_column():
-    inspector = inspect(engine)
-    if 'test_attempts' in inspector.get_table_names():
-        columns = [c['name'] for c in inspector.get_columns('test_attempts')]
-        if 'question_set' not in columns:
-            with engine.begin() as conn:
-                if engine.dialect.name == 'mysql':
-                    conn.execute(text("ALTER TABLE test_attempts ADD COLUMN question_set VARCHAR(20) NOT NULL DEFAULT 'set1'"))
-                else:
-                    conn.execute(text("ALTER TABLE test_attempts ADD COLUMN question_set VARCHAR(20) DEFAULT 'set1'"))
-        else:
-            with engine.begin() as conn:
-                conn.execute(text("UPDATE test_attempts SET question_set = 'set1' WHERE question_set IS NULL"))
+    pass
 
 @app.get("/api/candidate/all-modules", tags=["candidate"])
 def get_public_modules_direct(db: Session = Depends(get_db)):
@@ -150,9 +176,7 @@ def get_public_modules_direct(db: Session = Depends(get_db)):
 async def startup_event():
     try:
         Base.metadata.create_all(bind=engine)
-        ensure_question_set_column()
-        ensure_user_assigned_set_column()
-        ensure_testattempt_question_set_column()
+        auto_sync_schema()
         seed_db()
     except Exception as e:
         print(f"DB Error: {e}")
