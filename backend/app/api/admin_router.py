@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File, Form
+from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File, Form, Query
 from fastapi.responses import StreamingResponse
 import json
 import uuid
@@ -887,6 +887,7 @@ def list_questions(module_id: int, db: Session = Depends(get_db), current_user: 
 def excel_upload_questions(
     module_id: int,
     file: UploadFile = File(...),
+    question_set: Optional[str] = Query("set1"),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_admin_user)
 ):
@@ -982,6 +983,11 @@ def excel_upload_questions(
                     errors.append(f"Row {row_num}: SPEAKING_PROMPT requires a valid recording_duration_sec > 0")
                     continue
 
+            # Resolve question set from row or query param
+            row_set = str(row.get("question_set", "")).strip().lower()
+            if not row_set or row_set == "nan":
+                row_set = (question_set or "set1").strip().lower()
+
             # Create question
             question = Question(
                 module_id=module_id,
@@ -991,9 +997,9 @@ def excel_upload_questions(
                 audio_script=audio_script,
                 recording_duration=recording_duration,
                 display_type=display_type,
+                question_set=row_set,
                 order_index=created_count,
                 group_id=str(uuid.uuid4())
-
             )
             db.add(question)
             db.flush()

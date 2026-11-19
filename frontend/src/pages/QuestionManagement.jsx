@@ -21,7 +21,16 @@ import { useToast } from '../context/ToastContext';
 /* ─── helpers ─── */
 const getOptionLabel = (idx) => String.fromCharCode(65 + idx);
 const OPTION_LABELS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']; // Fallback/Legacy
-const QUESTION_SETS = ['set1', 'set2', 'set3', 'set4', 'set5'];
+const QUESTION_SETS = ['set1', 'set2', 'set3', 'set4', 'set5', 'set6', 'set7', 'set8', 'set9', 'set10'];
+
+const sortSets = (sets) => {
+  return [...sets].sort((a, b) => {
+    const numA = parseInt(String(a).replace(/\D/g, ''), 10) || 0;
+    const numB = parseInt(String(b).replace(/\D/g, ''), 10) || 0;
+    if (numA !== numB) return numA - numB;
+    return String(a).localeCompare(String(b));
+  });
+};
 
 const getSetLabel = (setId) => {
   if (!setId) return 'Set 1';
@@ -1027,7 +1036,9 @@ const QuestionManagement = () => {
     try {
       const fd = new FormData();
       fd.append('file', file);
-      const res = await api.post(`/admin/questions/excel-upload/${selectedModule.id}`, fd);
+      const res = await api.post(`/admin/questions/excel-upload/${selectedModule.id}`, fd, {
+        params: { question_set: selectedQuestionSet || 'set1' }
+      });
       const { created, errors } = res.data;
       if (created > 0) showToast(`✅ ${created} question(s) imported successfully!`, 'success');
       if (errors && errors.length > 0) {
@@ -1120,7 +1131,7 @@ const QuestionManagement = () => {
               <select
                 value={selectedQuestionSet}
                 onChange={(e) => setSelectedQuestionSet(e.target.value)}
-                style={{ padding: '4px 6px', minWidth: '70px', maxWidth: '80px', borderRadius: '8px', border: '1px solid #c7d2fe', background: '#fff', color: '#0f172a', fontWeight: 700, fontSize: '12px' }}
+                style={{ padding: '6px 10px', minWidth: '92px', borderRadius: '8px', border: '1.5px solid #c7d2fe', background: '#fff', color: '#0f172a', fontWeight: 700, fontSize: '13px', cursor: 'pointer' }}
               >
                 {QUESTION_SETS.map((setId) => (
                   <option key={setId} value={setId}>{getSetLabel(setId)}</option>
