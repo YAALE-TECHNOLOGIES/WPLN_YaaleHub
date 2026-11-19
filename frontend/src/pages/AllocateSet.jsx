@@ -3,7 +3,7 @@ import { useToast } from '../context/ToastContext';
 import { Loader2, Check, RotateCcw } from 'lucide-react';
 import api from '../api/api';
 
-const QUESTION_SETS = ['set1', 'set2', 'set3', 'set4', 'set5', 'set6', 'set7', 'set8', 'set9', 'set10'];
+const QUESTION_SETS = ['set1', 'set2', 'set3', 'set4', 'set5'];
 
 const getSetLabel = (setId) => {
   if (!setId) return 'Set 1';
