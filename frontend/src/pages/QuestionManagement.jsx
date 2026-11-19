@@ -21,7 +21,7 @@ import { useToast } from '../context/ToastContext';
 /* ─── helpers ─── */
 const getOptionLabel = (idx) => String.fromCharCode(65 + idx);
 const OPTION_LABELS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']; // Fallback/Legacy
-const QUESTION_SETS = ['set1', 'set2', 'set3', 'set4', 'set5'];
+const QUESTION_SETS = ['set1', 'set2', 'set3', 'set4', 'set5', 'set6', 'set7', 'set8', 'set9', 'set10'];
 
 const sortSets = (sets) => {
   return [...sets].sort((a, b) => {
