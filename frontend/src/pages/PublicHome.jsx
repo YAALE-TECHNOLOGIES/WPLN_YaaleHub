@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { 
   Clock, ArrowRight, BookOpen, Mic, Headset, 
   PenTool, FileText, Hash, CheckCircle,
-  Award, User, LogOut, Sparkles, ShieldCheck, BarChart3, ChevronRight
+  Award, User, LogOut, Sparkles, ChevronRight, ShieldCheck
 } from 'lucide-react';
 import Logo from '../assets/Logo.svg';
 import api from '../api/api';
@@ -12,39 +12,27 @@ import { useAuth } from '../context/AuthContext';
 const MODULE_PRESETS = {
   speaking: {
     tag: 'Oral & Phonetics',
-    desc: 'Oral fluency, pronunciation precision & situational dialogue response.',
-    accent: '#00A896',
-    bg: 'rgba(0, 168, 150, 0.08)'
+    desc: 'Oral fluency, pronunciation precision & situational dialogue response.'
   },
   listening: {
     tag: 'Audio Comprehension',
-    desc: 'Dialogue retention, contextual inference & real-time detail decoding.',
-    accent: '#028090',
-    bg: 'rgba(2, 128, 144, 0.08)'
+    desc: 'Dialogue retention, contextual inference & real-time detail decoding.'
   },
   writing: {
     tag: 'Business Composition',
-    desc: 'Structured expression, syntax mastery & communicative written clarity.',
-    accent: '#007373',
-    bg: 'rgba(0, 115, 115, 0.08)'
+    desc: 'Structured expression, syntax mastery & communicative written clarity.'
   },
   reading: {
     tag: 'Text Analysis',
-    desc: 'Critical reading, passage analysis & rapid vocabulary interpretation.',
-    accent: '#05668D',
-    bg: 'rgba(5, 102, 141, 0.08)'
+    desc: 'Critical reading, passage analysis & rapid vocabulary interpretation.'
   },
   'grammar & vocabulary': {
     tag: 'Lexical Mechanics',
-    desc: 'Sentence mechanics, applied grammatical structure & lexical precision.',
-    accent: '#118AB2',
-    bg: 'rgba(17, 138, 178, 0.08)'
+    desc: 'Sentence mechanics, applied grammatical structure & lexical precision.'
   },
   numeracy: {
     tag: 'Quantitative Logic',
-    desc: 'Workplace mathematical reasoning, numerical interpretation & problem solving.',
-    accent: '#06D6A0',
-    bg: 'rgba(6, 214, 160, 0.08)'
+    desc: 'Workplace mathematical reasoning, numerical interpretation & problem solving.'
   }
 };
 
@@ -101,70 +89,67 @@ const PublicHome = () => {
     }
     return {
       tag: 'Core Discipline',
-      desc: 'Standardized evaluation module mapping literacy and functional aptitude.',
-      accent: '#007373',
-      bg: 'rgba(0, 115, 115, 0.08)'
+      desc: 'Standardized evaluation module mapping literacy and functional aptitude.'
     };
   };
 
   const getModuleIcon = (name) => {
     const n = name.toLowerCase();
-    if (n.includes('speaking')) return <Mic size={24} strokeWidth={2} />;
-    if (n.includes('listening')) return <Headset size={24} strokeWidth={2} />;
-    if (n.includes('writing')) return <PenTool size={24} strokeWidth={2} />;
-    if (n.includes('reading')) return <BookOpen size={24} strokeWidth={2} />;
-    if (n.includes('grammar')) return <FileText size={24} strokeWidth={2} />;
-    if (n.includes('numeracy')) return <Hash size={24} strokeWidth={2} />;
-    return <FileText size={24} strokeWidth={2} />;
+    if (n.includes('speaking')) return <Mic size={24} strokeWidth={2.2} />;
+    if (n.includes('listening')) return <Headset size={24} strokeWidth={2.2} />;
+    if (n.includes('writing')) return <PenTool size={24} strokeWidth={2.2} />;
+    if (n.includes('reading')) return <BookOpen size={24} strokeWidth={2.2} />;
+    if (n.includes('grammar')) return <FileText size={24} strokeWidth={2.2} />;
+    if (n.includes('numeracy')) return <Hash size={24} strokeWidth={2.2} />;
+    return <FileText size={24} strokeWidth={2.2} />;
   };
 
   return (
-    <div className="rich-app">
-      {/* Background Ambient Glows */}
-      <div className="ambient-glow glow-top" />
-      <div className="ambient-glow glow-bottom" />
-      <div className="subtle-grid-bg" />
+    <div className="yaale-page">
+      {/* Subtle Ambient Radial Lighting */}
+      <div className="ambient-teal-glow" />
+      <div className="subtle-grid" />
 
-      {/* Luxury Glass Navigation */}
-      <header className="rich-header">
-        <div className="rich-container nav-row">
-          <div className="brand-group" onClick={() => navigate('/')}>
-            <div className="logo-box">
-              <img src={Logo} alt="Yaale Technologies" className="brand-logo" />
+      {/* Clean Frosted Header */}
+      <header className="yaale-header">
+        <div className="yaale-container header-row">
+          <div className="brand-lockup" onClick={() => navigate('/')}>
+            <div className="logo-shield">
+              <img src={Logo} alt="Yaale Technologies" className="logo-img" />
             </div>
-            <div className="brand-meta">
-              <span className="brand-name">Skill Bridge</span>
-              <span className="brand-sub">Yaale Technologies</span>
+            <div className="brand-text">
+              <span className="brand-primary">Skill Bridge</span>
+              <span className="brand-tagline">A Product of Yaale Technologies</span>
             </div>
           </div>
 
-          <nav className="nav-actions">
-            <button onClick={() => navigate('/syllabus')} className="nav-link-btn">
+          <nav className="header-nav">
+            <button onClick={() => navigate('/syllabus')} className="nav-btn">
               <BookOpen size={16} /> Syllabus
             </button>
-            <button onClick={() => navigate('/dashboard')} className="nav-link-btn">
+            <button onClick={() => navigate('/dashboard')} className="nav-btn">
               <Award size={16} /> My Results
             </button>
 
             {user ? (
-              <div className="user-pill">
-                <div className="avatar-chip">
+              <div className="user-capsule">
+                <div className="user-icon-circle">
                   <User size={15} />
                 </div>
-                <div className="user-name-box">
-                  <span className="user-name">{user?.fullname?.split(' ')[0] || 'Candidate'}</span>
-                  <span className="user-id">#{user?.id}</span>
+                <div className="user-text-wrap">
+                  <span className="user-name-label">{user?.fullname?.split(' ')[0] || 'Candidate'}</span>
+                  <span className="user-id-badge">ID #{user?.id}</span>
                 </div>
                 <button 
                   onClick={() => { logout(); navigate('/'); }} 
-                  className="logout-mini-btn" 
+                  className="logout-icon-btn" 
                   title="Sign Out"
                 >
-                  <LogOut size={14} />
+                  <LogOut size={15} />
                 </button>
               </div>
             ) : (
-              <button onClick={() => navigate('/login')} className="rich-login-btn">
+              <button onClick={() => navigate('/login')} className="primary-login-btn">
                 Sign In <ChevronRight size={15} />
               </button>
             )}
@@ -172,71 +157,71 @@ const PublicHome = () => {
         </div>
       </header>
 
-      {/* Hero Section (Clean, Punchy, Rich Mood) */}
-      <section className="rich-hero">
-        <div className="rich-container hero-container">
-          <div className="hero-pill-badge">
-            <Sparkles size={13} className="sparkle-icon" />
+      {/* Hero Section */}
+      <section className="yaale-hero">
+        <div className="yaale-container hero-center">
+          <div className="pre-badge">
+            <Sparkles size={14} className="sparkle-teal" />
             <span>WPLN Assessment Standard &bull; Singapore Benchmark</span>
           </div>
 
-          <h1 className="hero-headline">
+          <h1 className="hero-title">
             Workplace Literacy <br />
-            <span className="emerald-shimmer">&amp; Numeracy Standard</span>
+            <span className="teal-gradient-text">&amp; Numeracy Standard</span>
           </h1>
 
-          <p className="hero-subtext">
-            Precision assessment platform evaluating core language proficiency, contextual comprehension, and quantitative reasoning.
+          <p className="hero-desc">
+            Standardized digital evaluations measuring core language competency, contextual reasoning, and quantitative problem solving.
           </p>
 
-          {/* Quick Metrics Bar */}
-          <div className="metrics-strip">
-            <div className="metric-item">
-              <span className="metric-val">6</span>
-              <span className="metric-lbl">Core Disciplines</span>
+          {/* Clean White Stats Capsule */}
+          <div className="stats-capsule">
+            <div className="stat-unit">
+              <span className="stat-number">6</span>
+              <span className="stat-caption">Disciplines</span>
             </div>
-            <div className="metric-div" />
-            <div className="metric-item">
-              <span className="metric-val">A1 &ndash; C1</span>
-              <span className="metric-lbl">CEFR Mapped</span>
+            <div className="stat-divider" />
+            <div className="stat-unit">
+              <span className="stat-number">A1 &ndash; C1</span>
+              <span className="stat-caption">CEFR Mapped</span>
             </div>
-            <div className="metric-div" />
-            <div className="metric-item">
-              <span className="metric-val">100%</span>
-              <span className="metric-lbl">Automated Scoring</span>
+            <div className="stat-divider" />
+            <div className="stat-unit">
+              <span className="stat-number">100%</span>
+              <span className="stat-caption">Automated Scoring</span>
             </div>
-            <div className="metric-div" />
-            <div className="metric-item">
-              <span className="metric-val">Verified</span>
-              <span className="metric-lbl">Certification</span>
+            <div className="stat-divider" />
+            <div className="stat-unit">
+              <span className="stat-number">Official</span>
+              <span className="stat-caption">Certification Ready</span>
             </div>
           </div>
         </div>
       </section>
 
       {/* Assessment Modules Grid */}
-      <main className="modules-wrap">
-        <div className="rich-container">
-          <div className="section-title-row">
+      <main className="modules-block">
+        <div className="yaale-container">
+          <div className="modules-bar">
             <div>
-              <span className="section-eyebrow">STANDARDIZED MODULES</span>
-              <h2 className="section-heading">Select an Assessment</h2>
+              <span className="eyebrow-text">STANDARDIZED MODULES</span>
+              <h2 className="modules-headline">Available Assessments</h2>
             </div>
-            <p className="section-count">
-              {modules.length} Modules Available
-            </p>
+            <span className="count-pill">
+              {modules.length} Modules Online
+            </span>
           </div>
 
-          {error && <div className="rich-error-banner">{error}</div>}
+          {error && <div className="error-box">{error}</div>}
 
           {loading ? (
-            <div className="rich-grid">
+            <div className="modules-grid">
               {[1, 2, 3, 4, 5, 6].map(i => (
-                <div key={i} className="rich-skeleton" />
+                <div key={i} className="skeleton-module" />
               ))}
             </div>
           ) : (
-            <div className="rich-grid">
+            <div className="modules-grid">
               {modules.map(mod => {
                 const meta = getModuleMeta(mod.name);
                 const attemptState = getAttemptState(mod.id);
@@ -244,24 +229,22 @@ const PublicHome = () => {
                 const isOngoing = attemptState.status === 'in_progress';
 
                 return (
-                  <div key={mod.id} className={`module-tile ${isCompleted ? 'is-complete' : ''}`}>
-                    <div className="tile-header">
-                      <div className="icon-badge" style={{ color: meta.accent, background: meta.bg }}>
+                  <div key={mod.id} className={`assessment-card ${isCompleted ? 'state-completed' : ''}`}>
+                    <div className="card-top">
+                      <div className="icon-wrapper">
                         {getModuleIcon(mod.name)}
                       </div>
-                      <span className="category-pill" style={{ borderColor: `${meta.accent}33`, color: meta.accent }}>
-                        {meta.tag}
-                      </span>
+                      <span className="tag-pill">{meta.tag}</span>
                     </div>
 
-                    <div className="tile-content">
-                      <h3 className="module-title">{mod.name}</h3>
-                      <p className="module-synopsis">{meta.desc}</p>
+                    <div className="card-main">
+                      <h3 className="card-heading">{mod.name}</h3>
+                      <p className="card-desc">{meta.desc}</p>
                     </div>
 
-                    <div className="tile-footer">
-                      <div className="time-indicator">
-                        <Clock size={14} />
+                    <div className="card-bottom">
+                      <div className="duration-tag">
+                        <Clock size={15} />
                         <span>{mod.duration_minutes} Mins</span>
                       </div>
 
@@ -278,15 +261,15 @@ const PublicHome = () => {
                       >
                         {isCompleted ? (
                           <>
-                            <CheckCircle size={14} /> Completed
+                            <CheckCircle size={15} /> Completed
                           </>
                         ) : isOngoing ? (
                           <>
-                            Resume <ArrowRight size={14} />
+                            Resume <ArrowRight size={15} />
                           </>
                         ) : (
                           <>
-                            Begin <ArrowRight size={14} />
+                            Begin <ArrowRight size={15} />
                           </>
                         )}
                       </button>
@@ -299,39 +282,39 @@ const PublicHome = () => {
         </div>
       </main>
 
-      {/* Minimalist Executive Footer */}
-      <footer className="rich-footer">
-        <div className="rich-container footer-row">
-          <div className="footer-left">
-            <span className="footer-brand">Skill Bridge</span>
-            <span className="footer-sep">&bull;</span>
+      {/* Clean White & Teal Footer */}
+      <footer className="yaale-footer">
+        <div className="yaale-container footer-flex">
+          <div className="footer-brand-side">
+            <span className="brand-bold">Skill Bridge</span>
+            <span className="dot-sep">&bull;</span>
             <span>A Product of Yaale Technologies</span>
           </div>
-          <div className="footer-right">
-            <span>&copy; {new Date().getFullYear()} All Rights Reserved</span>
+          <div className="footer-copy-side">
+            <span>&copy; {new Date().getFullYear()} All Rights Reserved.</span>
           </div>
         </div>
       </footer>
 
       <style>{`
-        /* ─── Rich Mood Styling (Luxury Dark Minimalist) ─── */
+        /* ─── Clean White & Yaale Teal Palette (#007373) ─── */
         :root {
-          --rich-bg: #090e17;
-          --rich-surface: #0f172a;
-          --rich-card: rgba(18, 26, 43, 0.75);
-          --rich-card-hover: rgba(22, 33, 56, 0.95);
-          --rich-border: rgba(255, 255, 255, 0.07);
-          --rich-border-hover: rgba(0, 168, 150, 0.45);
-          --rich-emerald: #00A896;
-          --rich-emerald-glow: rgba(0, 168, 150, 0.25);
-          --rich-text: #f8fafc;
-          --rich-muted: #94a3b8;
-          --rich-dim: #64748b;
+          --yaale-teal: #007373;
+          --yaale-teal-light: #eaf5f5;
+          --yaale-teal-border: #b8dede;
+          --yaale-teal-hover: #005959;
+          --yaale-teal-active: #004040;
+          --yaale-navy: #0f172a;
+          --yaale-slate: #334155;
+          --yaale-muted: #64748b;
+          --yaale-border: #e2e8f0;
+          --yaale-card-bg: #ffffff;
+          --yaale-page-bg: #ffffff;
         }
 
-        .rich-app {
-          background-color: var(--rich-bg);
-          color: var(--rich-text);
+        .yaale-page {
+          background-color: var(--yaale-page-bg);
+          color: var(--yaale-navy);
           min-height: 100vh;
           position: relative;
           overflow-x: hidden;
@@ -339,422 +322,419 @@ const PublicHome = () => {
           letter-spacing: -0.01em;
         }
 
-        .rich-container {
+        .yaale-container {
           max-width: 1180px;
           margin: 0 auto;
           padding: 0 24px;
         }
 
-        /* Ambient Glows */
-        .ambient-glow {
+        /* Ambient Lighting (Clean Teal Wash on White) */
+        .ambient-teal-glow {
           position: absolute;
-          border-radius: 50%;
-          filter: blur(140px);
+          top: -150px;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 900px;
+          height: 480px;
+          background: radial-gradient(circle, rgba(0, 115, 115, 0.08) 0%, rgba(234, 245, 245, 0.5) 45%, transparent 70%);
           pointer-events: none;
           z-index: 0;
         }
-        .glow-top {
-          top: -120px;
-          left: 50%;
-          transform: translateX(-50%);
-          width: 800px;
-          height: 380px;
-          background: radial-gradient(circle, rgba(0, 168, 150, 0.18), transparent 70%);
-        }
-        .glow-bottom {
-          bottom: 100px;
-          right: -100px;
-          width: 600px;
-          height: 500px;
-          background: radial-gradient(circle, rgba(2, 128, 144, 0.12), transparent 70%);
-        }
 
-        /* Subtle Geometric Grid */
-        .subtle-grid-bg {
+        .subtle-grid {
           position: absolute;
           inset: 0;
           background-image: 
-            linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-          background-size: 64px 64px;
-          mask-image: radial-gradient(ellipse 60% 50% at 50% 30%, #000 70%, transparent 100%);
+            linear-gradient(to right, rgba(0, 115, 115, 0.025) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(0, 115, 115, 0.025) 1px, transparent 1px);
+          background-size: 56px 56px;
+          mask-image: radial-gradient(ellipse 65% 50% at 50% 25%, #000 60%, transparent 100%);
           pointer-events: none;
           z-index: 0;
         }
 
         /* ─── Header ─── */
-        .rich-header {
+        .yaale-header {
           position: sticky;
           top: 0;
           z-index: 100;
-          background: rgba(9, 14, 23, 0.82);
-          backdrop-filter: blur(20px);
-          -webkit-backdrop-filter: blur(20px);
-          border-bottom: 1px solid var(--rich-border);
+          background: rgba(255, 255, 255, 0.92);
+          backdrop-filter: blur(16px);
+          -webkit-backdrop-filter: blur(16px);
+          border-bottom: 1px solid var(--yaale-border);
           height: 76px;
         }
-        .nav-row {
+        .header-row {
           display: flex;
           align-items: center;
           justify-content: space-between;
           height: 100%;
         }
-        .brand-group {
+
+        .brand-lockup {
           display: flex;
           align-items: center;
           gap: 12px;
           cursor: pointer;
           user-select: none;
         }
-        .logo-box {
-          width: 40px;
-          height: 40px;
-          border-radius: 10px;
-          background: rgba(255, 255, 255, 0.04);
-          border: 1px solid rgba(255, 255, 255, 0.08);
+        .logo-shield {
+          width: 44px;
+          height: 44px;
+          border-radius: 12px;
+          background: #ffffff;
+          border: 1px solid var(--yaale-teal-border);
           display: flex;
           align-items: center;
           justify-content: center;
           padding: 6px;
+          box-shadow: 0 2px 8px rgba(0, 115, 115, 0.08);
         }
-        .brand-logo {
+        .logo-img {
           width: 100%;
           height: 100%;
           object-fit: contain;
         }
-        .brand-meta {
+        .brand-text {
           display: flex;
           flex-direction: column;
         }
-        .brand-name {
-          font-size: 17px;
+        .brand-primary {
+          font-size: 18px;
           font-weight: 800;
-          color: #ffffff;
-          letter-spacing: -0.02em;
-          line-height: 1.1;
+          color: var(--yaale-navy);
+          letter-spacing: -0.025em;
+          line-height: 1.15;
         }
-        .brand-sub {
-          font-size: 10px;
+        .brand-tagline {
+          font-size: 11px;
           font-weight: 700;
-          color: var(--rich-emerald);
-          letter-spacing: 0.08em;
+          color: var(--yaale-teal);
+          letter-spacing: 0.04em;
           text-transform: uppercase;
           margin-top: 2px;
         }
 
-        .nav-actions {
+        .header-nav {
           display: flex;
           align-items: center;
           gap: 12px;
         }
-        .nav-link-btn {
+        .nav-btn {
           display: inline-flex;
           align-items: center;
           gap: 7px;
-          background: transparent;
-          border: 1px solid transparent;
-          color: var(--rich-muted);
-          padding: 8px 14px;
+          background: #ffffff;
+          border: 1.5px solid var(--yaale-border);
+          color: var(--yaale-slate);
+          padding: 8px 16px;
           border-radius: 999px;
           font-size: 13px;
           font-weight: 600;
           cursor: pointer;
           transition: all 0.2s ease;
         }
-        .nav-link-btn:hover {
-          color: #ffffff;
-          background: rgba(255, 255, 255, 0.04);
-          border-color: rgba(255, 255, 255, 0.08);
+        .nav-btn:hover {
+          color: var(--yaale-teal);
+          border-color: var(--yaale-teal-border);
+          background: var(--yaale-teal-light);
         }
 
-        .rich-login-btn {
+        .primary-login-btn {
           display: inline-flex;
           align-items: center;
           gap: 6px;
-          padding: 8px 18px;
-          background: var(--rich-emerald);
-          color: #051a17;
+          padding: 9px 20px;
+          background: var(--yaale-teal);
+          color: #ffffff;
           border: none;
           border-radius: 999px;
           font-size: 13px;
           font-weight: 700;
           cursor: pointer;
           transition: all 0.2s ease;
-          box-shadow: 0 0 20px var(--rich-emerald-glow);
+          box-shadow: 0 4px 14px rgba(0, 115, 115, 0.25);
         }
-        .rich-login-btn:hover {
-          background: #00c2ad;
+        .primary-login-btn:hover {
+          background: var(--yaale-teal-hover);
           transform: translateY(-1px);
-          box-shadow: 0 4px 24px rgba(0, 168, 150, 0.45);
+          box-shadow: 0 6px 18px rgba(0, 115, 115, 0.35);
         }
 
-        .user-pill {
+        .user-capsule {
           display: flex;
           align-items: center;
           gap: 10px;
-          padding: 4px 10px 4px 6px;
+          padding: 4px 12px 4px 6px;
           border-radius: 999px;
-          background: rgba(255, 255, 255, 0.04);
-          border: 1px solid var(--rich-border);
+          background: var(--yaale-teal-light);
+          border: 1px solid var(--yaale-teal-border);
         }
-        .avatar-chip {
-          width: 26px;
-          height: 26px;
+        .user-icon-circle {
+          width: 28px;
+          height: 28px;
           border-radius: 50%;
-          background: var(--rich-emerald);
-          color: #061a17;
+          background: var(--yaale-teal);
+          color: #ffffff;
           display: flex;
           align-items: center;
           justify-content: center;
         }
-        .user-name-box {
+        .user-text-wrap {
           display: flex;
           align-items: baseline;
           gap: 6px;
         }
-        .user-name {
+        .user-name-label {
           font-size: 13px;
           font-weight: 700;
-          color: #ffffff;
+          color: var(--yaale-navy);
         }
-        .user-id {
+        .user-id-badge {
           font-size: 11px;
-          color: var(--rich-dim);
+          font-weight: 600;
+          color: var(--yaale-teal);
         }
-        .logout-mini-btn {
+        .logout-icon-btn {
           background: transparent;
           border: none;
-          color: var(--rich-dim);
+          color: var(--yaale-muted);
           cursor: pointer;
           display: flex;
           align-items: center;
           padding: 4px;
           border-radius: 4px;
+          transition: color 0.15s ease;
         }
-        .logout-mini-btn:hover {
-          color: #f87171;
+        .logout-icon-btn:hover {
+          color: #ef4444;
         }
 
         /* ─── Hero Section ─── */
-        .rich-hero {
+        .yaale-hero {
           position: relative;
           z-index: 1;
-          padding: 80px 0 60px;
+          padding: 70px 0 50px;
           text-align: center;
         }
-        .hero-container {
+        .hero-center {
           display: flex;
           flex-direction: column;
           align-items: center;
         }
-        .hero-pill-badge {
+
+        .pre-badge {
           display: inline-flex;
           align-items: center;
           gap: 8px;
-          padding: 6px 14px;
+          padding: 6px 16px;
           border-radius: 999px;
-          background: rgba(0, 168, 150, 0.08);
-          border: 1px solid rgba(0, 168, 150, 0.25);
+          background: var(--yaale-teal-light);
+          border: 1px solid var(--yaale-teal-border);
           font-size: 12px;
           font-weight: 700;
-          color: var(--rich-emerald);
+          color: var(--yaale-teal);
           letter-spacing: 0.04em;
           text-transform: uppercase;
-          margin-bottom: 24px;
+          margin-bottom: 22px;
         }
-        .sparkle-icon {
-          animation: pulse 2s infinite;
-        }
-        @keyframes pulse {
-          0%, 100% { opacity: 0.6; transform: scale(0.9); }
-          50% { opacity: 1; transform: scale(1.1); }
+        .sparkle-teal {
+          color: var(--yaale-teal);
         }
 
-        .hero-headline {
-          font-size: 56px;
+        .hero-title {
+          font-size: 54px;
           font-weight: 900;
-          line-height: 1.08;
+          line-height: 1.1;
           letter-spacing: -0.035em;
-          margin: 0 0 20px 0;
-          color: #ffffff;
+          margin: 0 0 18px 0;
+          color: var(--yaale-navy);
         }
-        .emerald-shimmer {
-          background: linear-gradient(135deg, #00A896 0%, #06D6A0 50%, #99F6E4 100%);
+        .teal-gradient-text {
+          color: var(--yaale-teal);
+          background: linear-gradient(135deg, #007373 0%, #009999 50%, #00b3b3 100%);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
         }
-        .hero-subtext {
+
+        .hero-desc {
           font-size: 18px;
-          color: var(--rich-muted);
-          max-width: 640px;
-          line-height: 1.55;
-          margin: 0 0 44px 0;
+          color: var(--yaale-muted);
+          max-width: 620px;
+          line-height: 1.6;
+          margin: 0 0 40px 0;
           font-weight: 400;
         }
 
-        /* Metrics Strip */
-        .metrics-strip {
+        /* Stats Capsule (Clean White Card) */
+        .stats-capsule {
           display: flex;
           align-items: center;
-          background: rgba(18, 26, 43, 0.6);
-          border: 1px solid var(--rich-border);
+          background: #ffffff;
+          border: 1.5px solid var(--yaale-border);
           border-radius: 999px;
-          padding: 12px 28px;
-          backdrop-filter: blur(12px);
-          gap: 24px;
+          padding: 14px 36px;
+          box-shadow: 0 8px 30px rgba(15, 23, 42, 0.05);
+          gap: 32px;
         }
-        .metric-item {
+        .stat-unit {
           display: flex;
           flex-direction: column;
           align-items: center;
         }
-        .metric-val {
-          font-size: 17px;
+        .stat-number {
+          font-size: 18px;
           font-weight: 800;
-          color: #ffffff;
+          color: var(--yaale-teal);
           line-height: 1.1;
         }
-        .metric-lbl {
+        .stat-caption {
           font-size: 11px;
-          font-weight: 600;
-          color: var(--rich-dim);
+          font-weight: 700;
+          color: var(--yaale-slate);
           text-transform: uppercase;
           letter-spacing: 0.05em;
           margin-top: 3px;
         }
-        .metric-div {
+        .stat-divider {
           width: 1px;
           height: 28px;
-          background: var(--rich-border);
+          background: var(--yaale-border);
         }
 
-        /* ─── Modules Section ─── */
-        .modules-wrap {
+        /* ─── Modules Block ─── */
+        .modules-block {
           position: relative;
           z-index: 1;
-          padding: 40px 0 100px;
+          padding: 30px 0 90px;
         }
-        .section-title-row {
+        .modules-bar {
           display: flex;
           align-items: flex-end;
           justify-content: space-between;
-          margin-bottom: 32px;
-          border-bottom: 1px solid var(--rich-border);
-          padding-bottom: 18px;
+          margin-bottom: 28px;
+          border-bottom: 1.5px solid var(--yaale-border);
+          padding-bottom: 16px;
         }
-        .section-eyebrow {
+        .eyebrow-text {
           font-size: 11px;
           font-weight: 800;
           letter-spacing: 0.12em;
-          color: var(--rich-emerald);
+          color: var(--yaale-teal);
           text-transform: uppercase;
         }
-        .section-heading {
-          font-size: 28px;
+        .modules-headline {
+          font-size: 26px;
           font-weight: 800;
-          color: #ffffff;
+          color: var(--yaale-navy);
           letter-spacing: -0.02em;
           margin: 4px 0 0 0;
         }
-        .section-count {
+        .count-pill {
           font-size: 13px;
-          color: var(--rich-dim);
-          font-weight: 600;
-          margin: 0;
+          color: var(--yaale-teal);
+          background: var(--yaale-teal-light);
+          border: 1px solid var(--yaale-teal-border);
+          padding: 4px 12px;
+          border-radius: 999px;
+          font-weight: 700;
         }
 
-        /* Grid */
-        .rich-grid {
+        /* Modules Grid */
+        .modules-grid {
           display: grid;
           grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
           gap: 24px;
         }
 
-        /* Module Tile (Rich Mood) */
-        .module-tile {
-          background: var(--rich-card);
-          border: 1px solid var(--rich-border);
-          border-radius: 20px;
+        /* Assessment Card (Clean White & Teal Highlight) */
+        .assessment-card {
+          background: #ffffff;
+          border: 1.5px solid var(--yaale-border);
+          border-radius: 18px;
           padding: 26px;
           display: flex;
           flex-direction: column;
-          backdrop-filter: blur(16px);
-          transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+          box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.04);
+          transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
           position: relative;
         }
-        .module-tile:hover {
-          background: var(--rich-card-hover);
-          border-color: var(--rich-border-hover);
+        .assessment-card:hover {
+          border-color: var(--yaale-teal);
           transform: translateY(-4px);
-          box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5), 0 0 30px -10px var(--rich-emerald-glow);
+          box-shadow: 0 16px 36px -6px rgba(0, 115, 115, 0.12), 0 4px 12px -2px rgba(15, 23, 42, 0.04);
         }
-        .module-tile.is-complete {
-          border-color: rgba(16, 185, 129, 0.25);
-          background: rgba(16, 185, 129, 0.04);
+        .assessment-card.state-completed {
+          background: #fbfdfc;
+          border-color: #a7f3d0;
         }
 
-        .tile-header {
+        .card-top {
           display: flex;
           align-items: center;
           justify-content: space-between;
           margin-bottom: 20px;
         }
-        .icon-badge {
+        .icon-wrapper {
           width: 48px;
           height: 48px;
           border-radius: 14px;
+          background: var(--yaale-teal-light);
+          color: var(--yaale-teal);
           display: flex;
           align-items: center;
           justify-content: center;
-          transition: transform 0.2s ease;
+          transition: all 0.2s ease;
         }
-        .module-tile:hover .icon-badge {
+        .assessment-card:hover .icon-wrapper {
+          background: var(--yaale-teal);
+          color: #ffffff;
           transform: scale(1.05);
         }
 
-        .category-pill {
+        .tag-pill {
           font-size: 11px;
           font-weight: 700;
-          letter-spacing: 0.04em;
+          letter-spacing: 0.03em;
           padding: 4px 10px;
           border-radius: 999px;
-          border: 1px solid transparent;
-          background: rgba(255, 255, 255, 0.02);
+          background: #f1f5f9;
+          color: var(--yaale-slate);
         }
 
-        .tile-content {
+        .card-main {
           flex: 1;
           margin-bottom: 24px;
         }
-        .module-title {
-          font-size: 21px;
+        .card-heading {
+          font-size: 20px;
           font-weight: 800;
-          color: #ffffff;
+          color: var(--yaale-navy);
           margin: 0 0 8px 0;
           letter-spacing: -0.015em;
         }
-        .module-synopsis {
+        .card-desc {
           font-size: 14px;
-          color: var(--rich-muted);
-          line-height: 1.5;
+          color: var(--yaale-muted);
+          line-height: 1.55;
           margin: 0;
-          min-height: 42px;
+          min-height: 44px;
         }
 
-        .tile-footer {
+        .card-bottom {
           display: flex;
           align-items: center;
           justify-content: space-between;
           padding-top: 18px;
-          border-top: 1px solid rgba(255, 255, 255, 0.05);
+          border-top: 1px solid #f1f5f9;
         }
-        .time-indicator {
+        .duration-tag {
           display: flex;
           align-items: center;
           gap: 6px;
-          font-size: 12px;
+          font-size: 13px;
           font-weight: 600;
-          color: var(--rich-dim);
+          color: var(--yaale-slate);
         }
 
         /* Action Buttons */
@@ -762,7 +742,7 @@ const PublicHome = () => {
           display: inline-flex;
           align-items: center;
           gap: 6px;
-          padding: 8px 16px;
+          padding: 9px 18px;
           border-radius: 10px;
           font-size: 13px;
           font-weight: 700;
@@ -771,42 +751,43 @@ const PublicHome = () => {
           transition: all 0.2s ease;
         }
         .btn-start {
-          background: var(--rich-emerald);
-          color: #061f1b;
+          background: var(--yaale-teal);
+          color: #ffffff;
+          box-shadow: 0 2px 8px rgba(0, 115, 115, 0.2);
         }
         .btn-start:hover {
-          background: #00c2ad;
+          background: var(--yaale-teal-hover);
           transform: translateX(2px);
-          box-shadow: 0 0 16px var(--rich-emerald-glow);
+          box-shadow: 0 4px 12px rgba(0, 115, 115, 0.35);
         }
         .btn-resume {
           background: #f59e0b;
-          color: #1a1202;
+          color: #ffffff;
         }
         .btn-resume:hover {
-          background: #fbbf24;
+          background: #d97706;
           transform: translateX(2px);
         }
         .btn-completed {
-          background: rgba(16, 185, 129, 0.12);
-          color: #10b981;
-          border: 1px solid rgba(16, 185, 129, 0.25);
+          background: #ecfdf5;
+          color: #059669;
+          border: 1px solid #a7f3d0;
           cursor: default;
         }
 
         /* Skeletons */
-        .rich-skeleton {
+        .skeleton-module {
           height: 220px;
-          background: rgba(255, 255, 255, 0.03);
-          border: 1px solid var(--rich-border);
-          border-radius: 20px;
+          background: #f8fafc;
+          border: 1.5px solid var(--yaale-border);
+          border-radius: 18px;
           animation: pulse 1.5s infinite;
         }
 
-        .rich-error-banner {
-          background: rgba(239, 68, 68, 0.1);
-          border: 1px solid rgba(239, 68, 68, 0.3);
-          color: #f87171;
+        .error-box {
+          background: #fef2f2;
+          border: 1px solid #fecaca;
+          color: #dc2626;
           padding: 12px 18px;
           border-radius: 12px;
           font-size: 13px;
@@ -814,40 +795,39 @@ const PublicHome = () => {
         }
 
         /* ─── Footer ─── */
-        .rich-footer {
-          border-top: 1px solid var(--rich-border);
+        .yaale-footer {
+          border-top: 1.5px solid var(--yaale-border);
           padding: 32px 0;
           font-size: 13px;
-          color: var(--rich-dim);
-          position: relative;
-          z-index: 1;
+          color: var(--yaale-muted);
+          background: #ffffff;
         }
-        .footer-row {
+        .footer-flex {
           display: flex;
           align-items: center;
           justify-content: space-between;
         }
-        .footer-left {
+        .footer-brand-side {
           display: flex;
           align-items: center;
           gap: 10px;
         }
-        .footer-brand {
-          font-weight: 700;
-          color: #e2e8f0;
+        .brand-bold {
+          font-weight: 800;
+          color: var(--yaale-navy);
         }
-        .footer-sep {
-          color: var(--rich-border);
+        .dot-sep {
+          color: var(--yaale-border);
         }
 
         /* Responsive */
         @media (max-width: 768px) {
-          .hero-headline { font-size: 38px; }
-          .hero-subtext { font-size: 16px; }
-          .metrics-strip { flex-wrap: wrap; border-radius: 20px; gap: 16px; justify-content: center; }
-          .metric-div { display: none; }
-          .rich-grid { grid-template-columns: 1fr; }
-          .footer-row { flex-direction: column; gap: 12px; text-align: center; }
+          .hero-title { font-size: 36px; }
+          .hero-desc { font-size: 16px; }
+          .stats-capsule { flex-wrap: wrap; border-radius: 20px; gap: 16px; justify-content: center; }
+          .stat-divider { display: none; }
+          .modules-grid { grid-template-columns: 1fr; }
+          .footer-flex { flex-direction: column; gap: 12px; text-align: center; }
         }
       `}</style>
     </div>
