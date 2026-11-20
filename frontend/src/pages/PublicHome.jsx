@@ -2,308 +2,856 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Clock, ArrowRight, BookOpen, Mic, Headset, 
-  PenTool, FileText, Hash, ChevronRight, CheckCircle,
-  Globe, Shield, Award, User, LogOut
+  PenTool, FileText, Hash, CheckCircle,
+  Award, User, LogOut, Sparkles, ShieldCheck, BarChart3, ChevronRight
 } from 'lucide-react';
 import Logo from '../assets/Logo.svg';
 import api from '../api/api';
 import { useAuth } from '../context/AuthContext';
 
+const MODULE_PRESETS = {
+  speaking: {
+    tag: 'Oral & Phonetics',
+    desc: 'Oral fluency, pronunciation precision & situational dialogue response.',
+    accent: '#00A896',
+    bg: 'rgba(0, 168, 150, 0.08)'
+  },
+  listening: {
+    tag: 'Audio Comprehension',
+    desc: 'Dialogue retention, contextual inference & real-time detail decoding.',
+    accent: '#028090',
+    bg: 'rgba(2, 128, 144, 0.08)'
+  },
+  writing: {
+    tag: 'Business Composition',
+    desc: 'Structured expression, syntax mastery & communicative written clarity.',
+    accent: '#007373',
+    bg: 'rgba(0, 115, 115, 0.08)'
+  },
+  reading: {
+    tag: 'Text Analysis',
+    desc: 'Critical reading, passage analysis & rapid vocabulary interpretation.',
+    accent: '#05668D',
+    bg: 'rgba(5, 102, 141, 0.08)'
+  },
+  'grammar & vocabulary': {
+    tag: 'Lexical Mechanics',
+    desc: 'Sentence mechanics, applied grammatical structure & lexical precision.',
+    accent: '#118AB2',
+    bg: 'rgba(17, 138, 178, 0.08)'
+  },
+  numeracy: {
+    tag: 'Quantitative Logic',
+    desc: 'Workplace mathematical reasoning, numerical interpretation & problem solving.',
+    accent: '#06D6A0',
+    bg: 'rgba(6, 214, 160, 0.08)'
+  }
+};
+
 const PublicHome = () => {
-    const { user, logout } = useAuth();
-    const [modules, setModules] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const [attempts, setAttempts] = useState([]);
-    const navigate = useNavigate();
+  const { user, logout } = useAuth();
+  const [modules, setModules] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [attempts, setAttempts] = useState([]);
+  const navigate = useNavigate();
 
-    useEffect(() => {
-        const fetchModulesAndAttempts = async () => {
-            try {
-                // Public endpoint for modules
-                const [modRes, attRes] = await Promise.all([
-                    api.get('/candidate/all-modules'),
-                    user ? api.get('/candidate/my-attempts') : Promise.resolve({ data: [] })
-                ]);
-                console.log('DEBUG - Modules:', modRes.data);
-                console.log('DEBUG - User:', user);
-                console.log('DEBUG - Attempts:', attRes.data);
-                setModules(modRes.data);
-                setAttempts(attRes.data);
-            } catch (err) {
-                console.error('Failed to fetch data', err);
-                setError('Unable to load assessment modules. Please check if the backend server is running.');
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchModulesAndAttempts();
-    }, [user]);
-
-    const getLatestAttempt = (moduleId) => {
-        const moduleAttempts = attempts
-            .filter(a => String(a.module_id) === String(moduleId))
-            .sort((a, b) => (Number(b.id) || 0) - (Number(a.id) || 0));
-        return moduleAttempts[0] || null;
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [modRes, attRes] = await Promise.all([
+          api.get('/candidate/all-modules'),
+          user ? api.get('/candidate/my-attempts') : Promise.resolve({ data: [] })
+        ]);
+        setModules(modRes.data);
+        setAttempts(attRes.data);
+      } catch (err) {
+        console.error('Failed to fetch data', err);
+        setError('Unable to load assessment modules. Please check connection.');
+      } finally {
+        setLoading(false);
+      }
     };
+    fetchData();
+  }, [user]);
 
-    const getAttemptState = (moduleId) => {
-        const latestAttempt = getLatestAttempt(moduleId);
-        if (!latestAttempt) return { label: 'Attend Test', className: 'btn-primary', disabled: false, status: null };
-        if (latestAttempt.status === 'COMPLETED') {
-            return { label: 'Completed', className: 'btn-completed', disabled: true, status: 'completed' };
-        }
-        if (latestAttempt.status === 'IN_PROGRESS') {
-            return { label: 'Attempted', className: 'btn-attempted', disabled: true, status: 'attempted' };
-        }
-        return { label: 'Attend Test', className: 'btn-primary', disabled: false, status: null };
+  const getLatestAttempt = (moduleId) => {
+    const moduleAttempts = attempts
+      .filter(a => String(a.module_id) === String(moduleId))
+      .sort((a, b) => (Number(b.id) || 0) - (Number(a.id) || 0));
+    return moduleAttempts[0] || null;
+  };
+
+  const getAttemptState = (moduleId) => {
+    const latest = getLatestAttempt(moduleId);
+    if (!latest) return { label: 'Start Assessment', className: 'btn-start', disabled: false, status: null };
+    if (latest.status === 'COMPLETED') {
+      return { label: 'Completed', className: 'btn-completed', disabled: true, status: 'completed' };
+    }
+    if (latest.status === 'IN_PROGRESS') {
+      return { label: 'Resume Test', className: 'btn-resume', disabled: false, status: 'in_progress', attemptId: latest.id };
+    }
+    return { label: 'Start Assessment', className: 'btn-start', disabled: false, status: null };
+  };
+
+  const getModuleMeta = (name) => {
+    const key = String(name).toLowerCase().trim();
+    for (const [k, v] of Object.entries(MODULE_PRESETS)) {
+      if (key.includes(k)) return v;
+    }
+    return {
+      tag: 'Core Discipline',
+      desc: 'Standardized evaluation module mapping literacy and functional aptitude.',
+      accent: '#007373',
+      bg: 'rgba(0, 115, 115, 0.08)'
     };
+  };
 
-    const getModuleIcon = (name) => {
-        const n = name.toLowerCase();
-        if (n.includes('speaking')) return <Mic size={32} />;
-        if (n.includes('listening')) return <Headset size={32} />;
-        if (n.includes('writing')) return <PenTool size={32} />;
-        if (n.includes('reading')) return <BookOpen size={32} />;
-        if (n.includes('grammar')) return <FileText size={32} />;
-        if (n.includes('numeracy')) return <Hash size={32} />;
-        return <FileText size={32} />;
-    };
+  const getModuleIcon = (name) => {
+    const n = name.toLowerCase();
+    if (n.includes('speaking')) return <Mic size={24} strokeWidth={2} />;
+    if (n.includes('listening')) return <Headset size={24} strokeWidth={2} />;
+    if (n.includes('writing')) return <PenTool size={24} strokeWidth={2} />;
+    if (n.includes('reading')) return <BookOpen size={24} strokeWidth={2} />;
+    if (n.includes('grammar')) return <FileText size={24} strokeWidth={2} />;
+    if (n.includes('numeracy')) return <Hash size={24} strokeWidth={2} />;
+    return <FileText size={24} strokeWidth={2} />;
+  };
 
-    return (
-        <div className="public-home">
-            <nav className="navbar glass">
-                <div className="container nav-content">
-                    <div className="logo">
-                        <img src={Logo} alt="Yaale Technologies" className="brand-logo" />
-                        <div className="brand-title-wrap">
-                            <span className="logo-text">Skill Bridge</span>
-                            <span className="logo-byline">A Product of Yaale Technologies</span>
-                        </div>
-                    </div>
-                    <div className="nav-actions" style={{display: 'flex', gap: '16px', alignItems: 'center'}}>
-                        <button 
-                            onClick={() => navigate('/dashboard')} 
-                            className="btn-results-menu"
-                            title="View Your Results"
-                        >
-                            <Award size={18} /> My Results
-                        </button>
+  return (
+    <div className="rich-app">
+      {/* Background Ambient Glows */}
+      <div className="ambient-glow glow-top" />
+      <div className="ambient-glow glow-bottom" />
+      <div className="subtle-grid-bg" />
 
-                        <button 
-                            onClick={() => navigate('/syllabus')} 
-                            className="btn-results-menu"
-                            title="View Syllabus"
-                        >
-                            <BookOpen size={18} /> Syllabus
-                        </button>
-                        
-                        {user ? (
-                            <>
-                                <div className="user-profile">
-                                    <div className="user-avatar"><User size={20} /></div>
-                                    <div className="user-info">
-                                        <p className="user-name">{user?.fullname}</p>
-                                        <p className="user-role">Candidate ID: {user?.id}</p>
-                                    </div>
-                                </div>
-                                <button onClick={() => { logout(); navigate('/'); }} className="logout-btn" title="Logout">
-                                    <LogOut size={22} color="#64748b" />
-                                </button>
-                            </>
-                        ) : (
-                            <button onClick={() => navigate('/login')} className="btn-login" title="Login / Register">
-                                Login
-                            </button>
-                        )}
-                    </div>
+      {/* Luxury Glass Navigation */}
+      <header className="rich-header">
+        <div className="rich-container nav-row">
+          <div className="brand-group" onClick={() => navigate('/')}>
+            <div className="logo-box">
+              <img src={Logo} alt="Yaale Technologies" className="brand-logo" />
+            </div>
+            <div className="brand-meta">
+              <span className="brand-name">Skill Bridge</span>
+              <span className="brand-sub">Yaale Technologies</span>
+            </div>
+          </div>
+
+          <nav className="nav-actions">
+            <button onClick={() => navigate('/syllabus')} className="nav-link-btn">
+              <BookOpen size={16} /> Syllabus
+            </button>
+            <button onClick={() => navigate('/dashboard')} className="nav-link-btn">
+              <Award size={16} /> My Results
+            </button>
+
+            {user ? (
+              <div className="user-pill">
+                <div className="avatar-chip">
+                  <User size={15} />
                 </div>
-            </nav>
-
-            <header className="hero">
-                <div className="container">
-                    <h1 className="fade-in">Master Your Skills with <span className="text-gradient">Skill Bridge Program</span></h1>
-                    <p className="fade-in">Comprehensive assessments designed to evaluate and certify your proficiency across core language and numeracy modules.</p>
+                <div className="user-name-box">
+                  <span className="user-name">{user?.fullname?.split(' ')[0] || 'Candidate'}</span>
+                  <span className="user-id">#{user?.id}</span>
                 </div>
-            </header>
-
-            <section className="modules-section">
-                <div className="container">
-                    <div className="section-header">
-                        <h2>Available Assessments</h2>
-                        <p>Explore our dynamically configured test modules. Click Attend to start your evaluation.</p>
-                        {error && <div className="error-banner">{error}</div>}
-                    </div>
-
-                    {loading ? (
-                        <div className="loading-grid">
-                            {[1,2,3,4,5,6].map(i => <div key={i} className="skeleton-card" />)}
-                        </div>
-                    ) : (
-                        <div className="module-grid">
-                            {modules.map(mod => {
-                                const attempt = getLatestAttempt(mod.id);
-                                const attemptState = getAttemptState(mod.id);
-                                const isDone = attemptState.status === 'completed';
-                                const isAttempted = attemptState.status === 'attempted';
-                                
-                                return (
-                                    <div key={mod.id} className={`module-card card fade-in ${isDone ? 'completed' : ''} ${isAttempted ? 'attempted' : ''}`}>
-                                        <div className="card-icon">
-                                            {getModuleIcon(mod.name)}
-                                        </div>
-                                        <div className="card-body">
-                                            <h3>{mod.name}</h3>
-                                            <p className="description">{mod.description || 'Generic assessment module designed to test your proficiency in this area.'}</p>
-                                            <div className="meta">
-                                                <span className="duration"><Clock size={16} /> {mod.duration_minutes} Minutes</span>
-                                                {isDone && <span className="status-done"><CheckCircle size={14} /> Completed</span>}
-                                                {isAttempted && <span className="status-attempted"><Clock size={14} /> Attempted</span>}
-                                            </div>
-                                        </div>
-                                        <button 
-                                            className={`attend-btn ${attemptState.className}`}
-                                            onClick={() => {
-                                                if (!attemptState.disabled) {
-                                                    navigate(`/test-start/${mod.id}`);
-                                                }
-                                            }}
-                                            disabled={attemptState.disabled}
-                                        >
-                                            {attemptState.label} {isDone ? <CheckCircle size={18} /> : isAttempted ? <Clock size={18} /> : <ArrowRight size={18} />}
-                                        </button>
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    )}
-                </div>
-            </section>
-
-            <footer className="footer">
-                <div className="container">
-                    <p>&copy; {new Date().getFullYear()} Skill Bridge Assessment Platform &bull; A Product of Yaale Technologies. All rights reserved.</p>
-                </div>
-            </footer>
-
-            <style>{`
-                .public-home { background: #f8fafc; color: #1e293b; min-height: 100vh; }
-                .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
-                .navbar { position: fixed; top: 0; left: 0; right: 0; height: 80px; z-index: 1000; background: rgba(255,255,255,0.8); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(0,0,0,0.05); }
-                .nav-content { display: flex; align-items: center; justify-content: space-between; height: 100%; }
-                .logo { display: flex; align-items: center; gap: 14px; text-decoration: none; }
-                .brand-logo { width: 52px; height: auto; display: block; object-fit: contain; }
-                .brand-title-wrap { display: flex; flex-direction: column; align-items: flex-start; }
-                .logo-text { font-size: 20px; font-weight: 800; color: #0f172a; letter-spacing: -0.02em; line-height: 1.2; }
-                .logo-byline { font-size: 11px; font-weight: 700; color: #007373; letter-spacing: 0.04em; text-transform: uppercase; margin-top: 2px; }
-                .btn-login { padding: 10px 24px; background: #007373; color: white; display: flex; align-items: center; justify-content: center; border-radius: 12px; transition: all 0.2s; border: none; cursor: pointer; font-weight: 700; font-size: 14px; }
-                .btn-login:hover { background: #005959; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0, 115, 115, 0.2); }
-                
-                .btn-results-menu { display: flex; align-items: center; gap: 8px; padding: 10px 18px; border-radius: 12px; border: 1px solid #e2e8f0; background: white; color: #1e293b; font-weight: 700; cursor: pointer; transition: all 0.2s; font-size: 14px; }
-                .btn-results-menu:hover { background: #f8fafc; border-color: #cbd5e1; transform: translateY(-1px); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
-
-                .user-profile {
-                    display: flex;
-                    align-items: center;
-                    gap: 12px;
-                    padding-right: 24px;
-                    border-right: 1px solid #e2e8f0;
-                    text-align: left;
-                }
-                .user-avatar {
-                    width: 36px;
-                    height: 36px;
-                    background: #e2e8f0;
-                    color: #64748b;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    border-radius: 50%;
-                    flex-shrink: 0;
-                }
-                .user-name {
-                    font-weight: 600;
-                    font-size: 14px;
-                    color: #0f172a;
-                    margin: 0;
-                    line-height: 1.2;
-                }
-                .user-role {
-                    font-size: 12px;
-                    color: #64748b;
-                    margin: 2px 0 0;
-                    line-height: 1;
-                }
-                .logout-btn {
-                    background: none;
-                    border: none;
-                    color: #64748b;
-                    opacity: 0.6;
-                    transition: all 0.2s;
-                    cursor: pointer;
-                    display: flex;
-                    align-items: center;
-                    padding: 8px;
-                    border-radius: 8px;
-                }
-                .logout-btn:hover {
-                    opacity: 1;
-                    color: #ef4444;
-                    background: #fee2e2;
-                }
-
-                @media (max-width: 640px) {
-                    .user-info { display: none; }
-                    .user-profile { padding-right: 12px; }
-                    .logo span { display: none; }
-                    .nav-actions { gap: 10px; }
-                    .btn-results-menu span { display: none; }
-                    .btn-results-menu { padding: 10px; }
-                }
-
-                .hero { padding: 180px 0 100px; text-align: center; background: radial-gradient(circle at top right, #eaf5f5, transparent), radial-gradient(circle at bottom left, #f5f3ff, transparent); }
-                .hero h1 { font-size: 64px; font-weight: 900; line-height: 1.1; margin-bottom: 24px; }
-                .text-gradient { background: linear-gradient(90deg, #007373, #20a39e); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-                .hero p { font-size: 20px; color: #64748b; max-width: 700px; margin: 0 auto; line-height: 1.6; }
-                
-                .modules-section { padding: 100px 0; }
-                .section-header { text-align: center; margin-bottom: 60px; }
-                .section-header h2 { font-size: 36px; font-weight: 800; margin-bottom: 16px; }
-                .section-header p { color: #64748b; }
-                .error-banner { background: #fef2f2; color: #dc2626; padding: 12px; border-radius: 8px; margin-top: 16px; font-weight: 600; font-size: 14px; }
-                
-                .module-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 32px; }
-                .module-card { display: flex; flex-direction: column; padding: 32px; height: 100%; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid rgba(0,0,0,0.03); }
-                .module-card:hover { transform: translateY(-8px); border-color: #007373; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.08); }
-                .card-icon { width: 64px; height: 64px; background: #eaf5f5; color: #007373; display: flex; align-items: center; justify-content: center; border-radius: 16px; margin-bottom: 24px; }
-                .card-body h3 { font-size: 24px; font-weight: 700; margin-bottom: 12px; }
-                .description { color: #64748b; font-size: 15px; line-height: 1.5; margin-bottom: 24px; min-height: 45px; }
-                .meta { display: flex; align-items: center; gap: 20px; margin-bottom: 32px; }
-                .duration, .marks { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: #475569; }
-                .status-done { display: flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 700; color: #10b981; background: #f0fdf4; padding: 4px 10px; border-radius: 20px; }
-                .status-attempted { display: flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 700; color: #d97706; background: #fffbeb; padding: 4px 10px; border-radius: 20px; }
-                
-                .attend-btn { width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 14px; margin-top: auto; border: none; border-radius: 12px; font-weight: 700; font-size: 14px; cursor: pointer; transition: all 0.2s; }
-                .btn-primary { background: #007373; color: white; }
-                .btn-primary:hover { background: #005959; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0, 115, 115, 0.2); }
-                .btn-completed { background: #f0fdf4; color: #10b981; border: 1px solid #dcfce7; }
-                .btn-completed:hover { background: #10b981; color: white; }
-                .btn-attempted { background: #fffbeb; color: #d97706; border: 1px solid #fde68a; }
-                .attend-btn:disabled { cursor: not-allowed; opacity: 1; transform: none; box-shadow: none; }
-                
-                .module-card.completed { border-color: #10b981; background: linear-gradient(to bottom right, #ffffff, #f0fdf4); }
-                .module-card.completed .card-icon { background: #10b981; color: white; }
-                .module-card.attempted { border-color: #f59e0b; background: linear-gradient(to bottom right, #ffffff, #fffbeb); }
-                .module-card.attempted .card-icon { background: #fef3c7; color: #d97706; }
-                
-                .footer { padding: 40px 0; border-top: 1px solid #e2e8f0; color: #64748b; text-align: center; font-size: 14px; }
-                
-                .skeleton-card { height: 400px; background: #f1f5f9; border-radius: 24px; position: relative; overflow: hidden; }
-                .skeleton-card::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent); animation: shimmer 1.5s infinite; }
-                @keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
-            `}</style>
+                <button 
+                  onClick={() => { logout(); navigate('/'); }} 
+                  className="logout-mini-btn" 
+                  title="Sign Out"
+                >
+                  <LogOut size={14} />
+                </button>
+              </div>
+            ) : (
+              <button onClick={() => navigate('/login')} className="rich-login-btn">
+                Sign In <ChevronRight size={15} />
+              </button>
+            )}
+          </nav>
         </div>
-    );
+      </header>
+
+      {/* Hero Section (Clean, Punchy, Rich Mood) */}
+      <section className="rich-hero">
+        <div className="rich-container hero-container">
+          <div className="hero-pill-badge">
+            <Sparkles size={13} className="sparkle-icon" />
+            <span>WPLN Assessment Standard &bull; Singapore Benchmark</span>
+          </div>
+
+          <h1 className="hero-headline">
+            Workplace Literacy <br />
+            <span className="emerald-shimmer">&amp; Numeracy Standard</span>
+          </h1>
+
+          <p className="hero-subtext">
+            Precision assessment platform evaluating core language proficiency, contextual comprehension, and quantitative reasoning.
+          </p>
+
+          {/* Quick Metrics Bar */}
+          <div className="metrics-strip">
+            <div className="metric-item">
+              <span className="metric-val">6</span>
+              <span className="metric-lbl">Core Disciplines</span>
+            </div>
+            <div className="metric-div" />
+            <div className="metric-item">
+              <span className="metric-val">A1 &ndash; C1</span>
+              <span className="metric-lbl">CEFR Mapped</span>
+            </div>
+            <div className="metric-div" />
+            <div className="metric-item">
+              <span className="metric-val">100%</span>
+              <span className="metric-lbl">Automated Scoring</span>
+            </div>
+            <div className="metric-div" />
+            <div className="metric-item">
+              <span className="metric-val">Verified</span>
+              <span className="metric-lbl">Certification</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Assessment Modules Grid */}
+      <main className="modules-wrap">
+        <div className="rich-container">
+          <div className="section-title-row">
+            <div>
+              <span className="section-eyebrow">STANDARDIZED MODULES</span>
+              <h2 className="section-heading">Select an Assessment</h2>
+            </div>
+            <p className="section-count">
+              {modules.length} Modules Available
+            </p>
+          </div>
+
+          {error && <div className="rich-error-banner">{error}</div>}
+
+          {loading ? (
+            <div className="rich-grid">
+              {[1, 2, 3, 4, 5, 6].map(i => (
+                <div key={i} className="rich-skeleton" />
+              ))}
+            </div>
+          ) : (
+            <div className="rich-grid">
+              {modules.map(mod => {
+                const meta = getModuleMeta(mod.name);
+                const attemptState = getAttemptState(mod.id);
+                const isCompleted = attemptState.status === 'completed';
+                const isOngoing = attemptState.status === 'in_progress';
+
+                return (
+                  <div key={mod.id} className={`module-tile ${isCompleted ? 'is-complete' : ''}`}>
+                    <div className="tile-header">
+                      <div className="icon-badge" style={{ color: meta.accent, background: meta.bg }}>
+                        {getModuleIcon(mod.name)}
+                      </div>
+                      <span className="category-pill" style={{ borderColor: `${meta.accent}33`, color: meta.accent }}>
+                        {meta.tag}
+                      </span>
+                    </div>
+
+                    <div className="tile-content">
+                      <h3 className="module-title">{mod.name}</h3>
+                      <p className="module-synopsis">{meta.desc}</p>
+                    </div>
+
+                    <div className="tile-footer">
+                      <div className="time-indicator">
+                        <Clock size={14} />
+                        <span>{mod.duration_minutes} Mins</span>
+                      </div>
+
+                      <button
+                        className={`action-btn ${attemptState.className}`}
+                        onClick={() => {
+                          if (isOngoing && attemptState.attemptId) {
+                            navigate(`/test/${mod.id}/${attemptState.attemptId}`);
+                          } else if (!isCompleted) {
+                            navigate(`/test-start/${mod.id}`);
+                          }
+                        }}
+                        disabled={isCompleted}
+                      >
+                        {isCompleted ? (
+                          <>
+                            <CheckCircle size={14} /> Completed
+                          </>
+                        ) : isOngoing ? (
+                          <>
+                            Resume <ArrowRight size={14} />
+                          </>
+                        ) : (
+                          <>
+                            Begin <ArrowRight size={14} />
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </main>
+
+      {/* Minimalist Executive Footer */}
+      <footer className="rich-footer">
+        <div className="rich-container footer-row">
+          <div className="footer-left">
+            <span className="footer-brand">Skill Bridge</span>
+            <span className="footer-sep">&bull;</span>
+            <span>A Product of Yaale Technologies</span>
+          </div>
+          <div className="footer-right">
+            <span>&copy; {new Date().getFullYear()} All Rights Reserved</span>
+          </div>
+        </div>
+      </footer>
+
+      <style>{`
+        /* ─── Rich Mood Styling (Luxury Dark Minimalist) ─── */
+        :root {
+          --rich-bg: #090e17;
+          --rich-surface: #0f172a;
+          --rich-card: rgba(18, 26, 43, 0.75);
+          --rich-card-hover: rgba(22, 33, 56, 0.95);
+          --rich-border: rgba(255, 255, 255, 0.07);
+          --rich-border-hover: rgba(0, 168, 150, 0.45);
+          --rich-emerald: #00A896;
+          --rich-emerald-glow: rgba(0, 168, 150, 0.25);
+          --rich-text: #f8fafc;
+          --rich-muted: #94a3b8;
+          --rich-dim: #64748b;
+        }
+
+        .rich-app {
+          background-color: var(--rich-bg);
+          color: var(--rich-text);
+          min-height: 100vh;
+          position: relative;
+          overflow-x: hidden;
+          font-family: -apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', 'Inter', 'Segoe UI', Roboto, sans-serif;
+          letter-spacing: -0.01em;
+        }
+
+        .rich-container {
+          max-width: 1180px;
+          margin: 0 auto;
+          padding: 0 24px;
+        }
+
+        /* Ambient Glows */
+        .ambient-glow {
+          position: absolute;
+          border-radius: 50%;
+          filter: blur(140px);
+          pointer-events: none;
+          z-index: 0;
+        }
+        .glow-top {
+          top: -120px;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 800px;
+          height: 380px;
+          background: radial-gradient(circle, rgba(0, 168, 150, 0.18), transparent 70%);
+        }
+        .glow-bottom {
+          bottom: 100px;
+          right: -100px;
+          width: 600px;
+          height: 500px;
+          background: radial-gradient(circle, rgba(2, 128, 144, 0.12), transparent 70%);
+        }
+
+        /* Subtle Geometric Grid */
+        .subtle-grid-bg {
+          position: absolute;
+          inset: 0;
+          background-image: 
+            linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+          background-size: 64px 64px;
+          mask-image: radial-gradient(ellipse 60% 50% at 50% 30%, #000 70%, transparent 100%);
+          pointer-events: none;
+          z-index: 0;
+        }
+
+        /* ─── Header ─── */
+        .rich-header {
+          position: sticky;
+          top: 0;
+          z-index: 100;
+          background: rgba(9, 14, 23, 0.82);
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
+          border-bottom: 1px solid var(--rich-border);
+          height: 76px;
+        }
+        .nav-row {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          height: 100%;
+        }
+        .brand-group {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          cursor: pointer;
+          user-select: none;
+        }
+        .logo-box {
+          width: 40px;
+          height: 40px;
+          border-radius: 10px;
+          background: rgba(255, 255, 255, 0.04);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 6px;
+        }
+        .brand-logo {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+        }
+        .brand-meta {
+          display: flex;
+          flex-direction: column;
+        }
+        .brand-name {
+          font-size: 17px;
+          font-weight: 800;
+          color: #ffffff;
+          letter-spacing: -0.02em;
+          line-height: 1.1;
+        }
+        .brand-sub {
+          font-size: 10px;
+          font-weight: 700;
+          color: var(--rich-emerald);
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          margin-top: 2px;
+        }
+
+        .nav-actions {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+        }
+        .nav-link-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 7px;
+          background: transparent;
+          border: 1px solid transparent;
+          color: var(--rich-muted);
+          padding: 8px 14px;
+          border-radius: 999px;
+          font-size: 13px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+        .nav-link-btn:hover {
+          color: #ffffff;
+          background: rgba(255, 255, 255, 0.04);
+          border-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .rich-login-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 8px 18px;
+          background: var(--rich-emerald);
+          color: #051a17;
+          border: none;
+          border-radius: 999px;
+          font-size: 13px;
+          font-weight: 700;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          box-shadow: 0 0 20px var(--rich-emerald-glow);
+        }
+        .rich-login-btn:hover {
+          background: #00c2ad;
+          transform: translateY(-1px);
+          box-shadow: 0 4px 24px rgba(0, 168, 150, 0.45);
+        }
+
+        .user-pill {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          padding: 4px 10px 4px 6px;
+          border-radius: 999px;
+          background: rgba(255, 255, 255, 0.04);
+          border: 1px solid var(--rich-border);
+        }
+        .avatar-chip {
+          width: 26px;
+          height: 26px;
+          border-radius: 50%;
+          background: var(--rich-emerald);
+          color: #061a17;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .user-name-box {
+          display: flex;
+          align-items: baseline;
+          gap: 6px;
+        }
+        .user-name {
+          font-size: 13px;
+          font-weight: 700;
+          color: #ffffff;
+        }
+        .user-id {
+          font-size: 11px;
+          color: var(--rich-dim);
+        }
+        .logout-mini-btn {
+          background: transparent;
+          border: none;
+          color: var(--rich-dim);
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          padding: 4px;
+          border-radius: 4px;
+        }
+        .logout-mini-btn:hover {
+          color: #f87171;
+        }
+
+        /* ─── Hero Section ─── */
+        .rich-hero {
+          position: relative;
+          z-index: 1;
+          padding: 80px 0 60px;
+          text-align: center;
+        }
+        .hero-container {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+        .hero-pill-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          padding: 6px 14px;
+          border-radius: 999px;
+          background: rgba(0, 168, 150, 0.08);
+          border: 1px solid rgba(0, 168, 150, 0.25);
+          font-size: 12px;
+          font-weight: 700;
+          color: var(--rich-emerald);
+          letter-spacing: 0.04em;
+          text-transform: uppercase;
+          margin-bottom: 24px;
+        }
+        .sparkle-icon {
+          animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+          0%, 100% { opacity: 0.6; transform: scale(0.9); }
+          50% { opacity: 1; transform: scale(1.1); }
+        }
+
+        .hero-headline {
+          font-size: 56px;
+          font-weight: 900;
+          line-height: 1.08;
+          letter-spacing: -0.035em;
+          margin: 0 0 20px 0;
+          color: #ffffff;
+        }
+        .emerald-shimmer {
+          background: linear-gradient(135deg, #00A896 0%, #06D6A0 50%, #99F6E4 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+        }
+        .hero-subtext {
+          font-size: 18px;
+          color: var(--rich-muted);
+          max-width: 640px;
+          line-height: 1.55;
+          margin: 0 0 44px 0;
+          font-weight: 400;
+        }
+
+        /* Metrics Strip */
+        .metrics-strip {
+          display: flex;
+          align-items: center;
+          background: rgba(18, 26, 43, 0.6);
+          border: 1px solid var(--rich-border);
+          border-radius: 999px;
+          padding: 12px 28px;
+          backdrop-filter: blur(12px);
+          gap: 24px;
+        }
+        .metric-item {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+        .metric-val {
+          font-size: 17px;
+          font-weight: 800;
+          color: #ffffff;
+          line-height: 1.1;
+        }
+        .metric-lbl {
+          font-size: 11px;
+          font-weight: 600;
+          color: var(--rich-dim);
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          margin-top: 3px;
+        }
+        .metric-div {
+          width: 1px;
+          height: 28px;
+          background: var(--rich-border);
+        }
+
+        /* ─── Modules Section ─── */
+        .modules-wrap {
+          position: relative;
+          z-index: 1;
+          padding: 40px 0 100px;
+        }
+        .section-title-row {
+          display: flex;
+          align-items: flex-end;
+          justify-content: space-between;
+          margin-bottom: 32px;
+          border-bottom: 1px solid var(--rich-border);
+          padding-bottom: 18px;
+        }
+        .section-eyebrow {
+          font-size: 11px;
+          font-weight: 800;
+          letter-spacing: 0.12em;
+          color: var(--rich-emerald);
+          text-transform: uppercase;
+        }
+        .section-heading {
+          font-size: 28px;
+          font-weight: 800;
+          color: #ffffff;
+          letter-spacing: -0.02em;
+          margin: 4px 0 0 0;
+        }
+        .section-count {
+          font-size: 13px;
+          color: var(--rich-dim);
+          font-weight: 600;
+          margin: 0;
+        }
+
+        /* Grid */
+        .rich-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+          gap: 24px;
+        }
+
+        /* Module Tile (Rich Mood) */
+        .module-tile {
+          background: var(--rich-card);
+          border: 1px solid var(--rich-border);
+          border-radius: 20px;
+          padding: 26px;
+          display: flex;
+          flex-direction: column;
+          backdrop-filter: blur(16px);
+          transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+          position: relative;
+        }
+        .module-tile:hover {
+          background: var(--rich-card-hover);
+          border-color: var(--rich-border-hover);
+          transform: translateY(-4px);
+          box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5), 0 0 30px -10px var(--rich-emerald-glow);
+        }
+        .module-tile.is-complete {
+          border-color: rgba(16, 185, 129, 0.25);
+          background: rgba(16, 185, 129, 0.04);
+        }
+
+        .tile-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 20px;
+        }
+        .icon-badge {
+          width: 48px;
+          height: 48px;
+          border-radius: 14px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: transform 0.2s ease;
+        }
+        .module-tile:hover .icon-badge {
+          transform: scale(1.05);
+        }
+
+        .category-pill {
+          font-size: 11px;
+          font-weight: 700;
+          letter-spacing: 0.04em;
+          padding: 4px 10px;
+          border-radius: 999px;
+          border: 1px solid transparent;
+          background: rgba(255, 255, 255, 0.02);
+        }
+
+        .tile-content {
+          flex: 1;
+          margin-bottom: 24px;
+        }
+        .module-title {
+          font-size: 21px;
+          font-weight: 800;
+          color: #ffffff;
+          margin: 0 0 8px 0;
+          letter-spacing: -0.015em;
+        }
+        .module-synopsis {
+          font-size: 14px;
+          color: var(--rich-muted);
+          line-height: 1.5;
+          margin: 0;
+          min-height: 42px;
+        }
+
+        .tile-footer {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding-top: 18px;
+          border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .time-indicator {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 12px;
+          font-weight: 600;
+          color: var(--rich-dim);
+        }
+
+        /* Action Buttons */
+        .action-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 8px 16px;
+          border-radius: 10px;
+          font-size: 13px;
+          font-weight: 700;
+          cursor: pointer;
+          border: none;
+          transition: all 0.2s ease;
+        }
+        .btn-start {
+          background: var(--rich-emerald);
+          color: #061f1b;
+        }
+        .btn-start:hover {
+          background: #00c2ad;
+          transform: translateX(2px);
+          box-shadow: 0 0 16px var(--rich-emerald-glow);
+        }
+        .btn-resume {
+          background: #f59e0b;
+          color: #1a1202;
+        }
+        .btn-resume:hover {
+          background: #fbbf24;
+          transform: translateX(2px);
+        }
+        .btn-completed {
+          background: rgba(16, 185, 129, 0.12);
+          color: #10b981;
+          border: 1px solid rgba(16, 185, 129, 0.25);
+          cursor: default;
+        }
+
+        /* Skeletons */
+        .rich-skeleton {
+          height: 220px;
+          background: rgba(255, 255, 255, 0.03);
+          border: 1px solid var(--rich-border);
+          border-radius: 20px;
+          animation: pulse 1.5s infinite;
+        }
+
+        .rich-error-banner {
+          background: rgba(239, 68, 68, 0.1);
+          border: 1px solid rgba(239, 68, 68, 0.3);
+          color: #f87171;
+          padding: 12px 18px;
+          border-radius: 12px;
+          font-size: 13px;
+          margin-bottom: 24px;
+        }
+
+        /* ─── Footer ─── */
+        .rich-footer {
+          border-top: 1px solid var(--rich-border);
+          padding: 32px 0;
+          font-size: 13px;
+          color: var(--rich-dim);
+          position: relative;
+          z-index: 1;
+        }
+        .footer-row {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
+        .footer-left {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+        .footer-brand {
+          font-weight: 700;
+          color: #e2e8f0;
+        }
+        .footer-sep {
+          color: var(--rich-border);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+          .hero-headline { font-size: 38px; }
+          .hero-subtext { font-size: 16px; }
+          .metrics-strip { flex-wrap: wrap; border-radius: 20px; gap: 16px; justify-content: center; }
+          .metric-div { display: none; }
+          .rich-grid { grid-template-columns: 1fr; }
+          .footer-row { flex-direction: column; gap: 12px; text-align: center; }
+        }
+      `}</style>
+    </div>
+  );
 };
 
 export default PublicHome;
